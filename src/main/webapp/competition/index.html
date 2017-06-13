@@ -1,0 +1,138 @@
+<style>
+#competitionContent {
+	margin: 50px;
+}
+
+#competitionContent p {
+	word-break: break-all;
+	display: inline-block;
+}
+
+#applyDialog .modal-dialog {
+	width: 90%;
+}
+
+#applyDialog textarea {
+	width: 90%;
+}
+</style>
+<div id="competitionContent" ng-controller="competitionCtr">
+	<div class="panel panel-success" ng-repeat="competition in page.datas">
+		<div class="panel-heading">{{competition.competitionName}}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			比赛开始时间：{{competition.competitionBeginTime|
+			stringDateFormat:'yyyy-MM-dd HH:mm:ss'}}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比赛结束时间：{{competition.competitionEndTime|
+			stringDateFormat:'yyyy-MM-dd HH:mm:ss'}}</div>
+		<div class="panel-body">
+			<div ng-if="competition.competitionApplyBeginTime">
+				比赛申请开始时间：{{competition.competitionApplyBeginTime|
+				stringDateFormat:'yyyy-MM-dd HH:mm:ss'}}
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比赛申请结束时间：{{competition.competitionApplyEndTime|
+				stringDateFormat:'yyyy-MM-dd HH:mm:ss'}} &nbsp;&nbsp;&nbsp;&nbsp;
+				<button ng-if="!competition.isClose && checkTime(competition.competitionApplyEndTime)" class="btn btn-info" type="button" ng-click="apply($index)">报名比赛</button>
+			</div>
+			<div>{{competition.competitionDescription}}</div>
+			<br />
+			<div ng-if="!competition.isClose && checkTime(competition.competitionEndTime)">
+				<button class="btn btn-primary" type="button"
+					ng-click="login($index)">登录比赛</button>
+			</div>
+			<div ng-if="competition.isClose">比赛已经关闭</div>
+		</div>
+
+	</div>
+
+	<ul class="pager">
+		<li><a href="javascript:;" ng-if="isCanPre"
+			ng-click="changePage(false)">&laquo;上一页</a></li>
+		<li class="active"><span>页码：{{page.currentPage}}/{{page.totalPage}}
+				&nbsp; &nbsp;总条数：<span class="badge">{{page.totalCount}}</span>
+		</span></li>
+		<li><a href="javascript:;" ng-if="isCanNext"
+			ng-click="changePage(true)">下一页&raquo;</a></li>
+	</ul>
+
+
+	<!-- 申请弹出框 开始-->
+	<div class="modal fade dialog" id="applyDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">比赛：{{applyObj.competitionName}} 报名申请窗口</h4>
+				</div>
+				<form ng-submit="applySubmit()">
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>比赛编号：{{applyObj.competitionId}}</td>
+								</tr>
+								<tr>
+									<td>通知邮箱：<input type="email" ng-model="applyObj.email"
+										required />
+									</td>
+								</tr>
+								<tr>
+									<td>通知手机：<input type="phone" ng-model="applyObj.phone" />
+									</td>
+								</tr>
+								<tr>
+									<td>报名参赛人数：1</td>
+								</tr>
+								<tr>
+									<td>申请摘要：<input type="text" maxlength="30"
+										ng-model="applyObj.applicationSummary" required />
+									</td>
+								</tr>
+								<tr>
+									<td>申请内容：<br /> <textarea rows="10" cols="150"
+											maxlength="3000" ng-model="applyObj.applicationContent"></textarea>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">保存</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- 申请弹出框 结束-->
+	<!-- 登录弹出框 开始-->
+	<div class="modal fade dialog" id="loginDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" ng-submit="loginSubmit()">
+						<span class="heading">比赛登录</span>
+						<div class="form-group">
+							<i class="icon-user"></i><input type="text" class="form-control"
+								placeholder="账号" ng-model="loginObj.account" required>{{error.accountError}}
+						</div>
+						<div class="form-group">
+							<i class="icon-key"></i><input type="password" placeholder="密码"
+								class="form-control" ng-model="loginObj.password" required>{{error.passwordError}}{{error.competitionIdError}}
+							{{error.tokenError}}
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success form-control">登录</button>
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 登录弹出框 结束-->
+</div>

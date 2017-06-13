@@ -1,0 +1,109 @@
+<style>
+#detailDialog {
+	margin: 0;
+}
+</style>
+<div class="common-content" ng-controller="managerUserCtr">
+	<div id="loadingTip" class="alert alert-success alert-dismissable"
+		ng-if="isLoadingData">加载数据中，请稍等</div>
+
+	<div ng-if="!isLoadingData">
+		<button class="btn btn-success common-topButton" type="button"
+			ng-click="refresh()">刷新数据</button>
+
+		<table
+			class="table table-bordered table-hover table-striped common-dataTable">
+			<thead>
+				<tr>
+					<th class="span1">编号</th>
+					<th class="span2">账号</th>
+					<th class="span2">昵称</th>
+					<th class="span3">邮箱</th>
+					<th class="span1">是否封禁</th>
+					<th class="span4">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="user in page.datas">
+					<td class="span1">{{user.userId}}</td>
+					<td class="span2">{{user.account}}</td>
+					<td class="span2">{{user.nickname}}</td>
+					<td class="span3">{{user.email}}</td>
+					<td class="span1">{{user.isBan == true ? "是" : "否"}}</td>
+					<td class="span4">
+						<button class="btn btn-success " type="button"
+							ng-click="detail($index)">详情</button>
+						<button class="btn btn-info " type="button"
+							ng-click="notBan($index)">解封用户</button>
+						<button class="btn btn-danger " type="button"
+							ng-click="ban($index)">封禁用户</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<ul class="pager">
+			<li><a href="javascript:;" ng-if="isCanPre"
+				ng-click="changePage(false)">&laquo;上一页</a></li>
+			<li class="active"><span>页码：{{page.currentPage}}/{{page.totalPage}}
+					&nbsp; &nbsp;总条数：<span class="badge">{{page.totalCount}}</span>
+			</span></li>
+			<li><a href="javascript:;" ng-if="isCanNext"
+				ng-click="changePage(true)">下一页&raquo;</a></li>
+		</ul>
+	</div>
+
+	<!-- 详情弹出框 开始-->
+	<div class="modal fade" id="detailDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">用户信息详情窗口</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-bordered table-hover ">
+						<tbody>
+							<tr>
+								<td>编号： {{currentDetailObj.userId}}</td>
+							</tr>
+							<tr>
+								<td>账号： {{currentDetailObj.account}}</td>
+							</tr>
+							<tr>
+								<td>昵称： {{currentDetailObj.nickname}}</td>
+							</tr>
+							<tr>
+								<td>邮箱： {{currentDetailObj.email}}</td>
+							</tr>
+							<tr>
+								<td>是否封禁： {{currentDetailObj.isBan == true ? "是" : "否"}}</td>
+							</tr>
+							<tr>
+								<td>一共做过的题目数量： {{currentDetailObj.haveDoneProblem}}</td>
+							</tr>
+							<tr>
+								<td>一共做对的题目数量： {{currentDetailObj.rightProblemCount}}</td>
+							</tr>
+							<tr>
+								<td>一共解决的题目总价值： {{currentDetailObj.totalSolveValue}}</td>
+							</tr>
+							<tr>
+								<td>记保存记录数据表： {{currentDetailObj.submitRecordTableName}}</td>
+							</tr>
+							<tr>
+								<td>代码存放路径： {{currentDetailObj.sourceFileRootPath}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 详情弹出框 结束-->
+
+</div>
+
+

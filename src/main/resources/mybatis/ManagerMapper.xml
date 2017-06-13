@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.ManagerDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		manager_id,account,password,nickname
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="managerId != null">
+				and manager_id = #{managerId}
+			</if>
+			<if test="account != null">
+				and account = #{account}
+			</if>
+			<if test="password != null">
+				and password = #{password}
+			</if>
+			<if test="nickname != null">
+				and nickname = #{nickname}
+			</if>
+			<if test="role != null and role.roleId != null">
+				and m.role_id = #{role.roleId}
+			</if>
+		</trim>
+	</sql>
+
+	<resultMap type="cn.superman.web.po.Manager" id="DefaultManageResultMap">
+		<id column="manager_id" jdbcType="INTEGER" property="managerId" />
+		<result column="account" jdbcType="VARCHAR" property="account" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<association property="role" javaType="cn.superman.web.po.Role">
+			<id column="role_id" jdbcType="INTEGER" property="roleId" />
+			<result column="role_name" jdbcType="VARCHAR" property="roleName" />
+			<result column="permissions" jdbcType="VARCHAR" property="permissions" />
+		</association>
+	</resultMap>
+
+	<insert id="add" parameterType="cn.superman.web.po.Manager"
+		useGeneratedKeys="true" keyProperty="managerId">
+		insert into
+		manager(account,password,nickname,role_id)
+		values(#{account},#{password},#{nickname},#{role.roleId})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.Manager">
+		update manager
+		<set>
+			<if test="account != null">
+				account = #{account},
+			</if>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname},
+			</if>
+			<if test="role != null">
+				role_id = #{role.roleId}
+			</if>
+		</set>
+		where manager_id = #{managerId}
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from manager
+		<where>
+			<if test="#{_parameter != null}">
+				and manager_id = #{_parameter}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.Manager">
+		delete from manager
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="find" resultMap="DefaultManageResultMap">
+		select
+		<include refid="Base_Column_List" />
+		,r.role_id,r.role_name,r.permissions
+		from manager m left JOIN role r ON
+		m.role_id =
+		r.role_id
+	</select>
+
+	<select id="findById" parameterType="Integer" resultMap="DefaultManageResultMap">
+		select
+		<include refid="Base_Column_List" />
+		,r.role_id,r.role_name,r.permissions
+		from manager m left JOIN role r ON
+		m.role_id =
+		r.role_id
+		<where>
+			<if test="#{_parameter != null}">
+				and manager_id = #{_parameter}
+			</if>
+		</where>
+	</select>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.Manager"
+		resultMap="DefaultManageResultMap">
+		select
+		<include refid="Base_Column_List" />
+		,r.role_id,r.role_name,r.permissions
+		from manager m left JOIN role r ON
+		m.role_id =
+		r.role_id
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+	<select id="queryTotalCount" resultType="Long">
+		select count(*)
+		from
+		manager
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.Manager"
+		resultType="Long">
+		select count(*)
+		from manager
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+
+</mapper>

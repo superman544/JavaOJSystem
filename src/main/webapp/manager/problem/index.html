@@ -1,0 +1,300 @@
+
+<style>
+#detailDialog,#addDialog,#updateDialog {
+	margin: 0;
+	width: 100%;
+}
+
+.modal-dialog {
+	width: 90%;
+}
+
+textarea {
+	width: 90%;
+}
+</style>
+
+<div class="common-content" ng-controller="managerProblemCtr">
+	<div id="loadingTip" class="alert alert-success alert-dismissable"
+		ng-if="isLoadingData">加载数据中，请稍等</div>
+
+	<div ng-if="!isLoadingData">
+		<button class="btn btn-primary common-topButton" type="button"
+			ng-click="add()">添加题目</button>
+		<button class="btn btn-success common-topButton" type="button"
+			ng-click="refresh()">刷新数据</button>
+
+		<table
+			class="table table-bordered table-hover table-striped common-dataTable">
+			<thead>
+				<tr>
+					<th class="span1">编号</th>
+					<th class="span2">题目名称</th>
+					<th class="span2">题目类型</th>
+					<th class="span4">题目标签</th>
+					<th class="span1">公布</th>
+					<th class="span4">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="problem in page.datas">
+					<td class="span1">{{problem.problemId}}</td>
+					<td class="span2">{{problem.problemName}}</td>
+					<td class="span2">{{problem.problemTypeId | problemTypeFilter
+						: problemTypes}}</td>
+					<td class="span4">{{problem.problemLabel}}</td>
+					<td class="span1">{{problem.isPublish == true?"是" : "否"}}</td>
+					<td class="span4">
+						<button class="btn btn-success " type="button"
+							ng-click="detail($index)">详情</button>
+						<button class="btn btn-info " type="button"
+							ng-click="edit($index)">修改</button>
+						<button class="btn btn-primary " type="button"
+							ng-click="files($index)">输入输出</button>
+						<button class="btn btn-danger " type="button"
+							ng-click="delete($index)">删除</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<ul class="pager">
+			<li><a href="javascript:;" ng-if="isCanPre"
+				ng-click="changePage(false)">&laquo;上一页</a></li>
+			<li class="active"><span>页码：{{page.currentPage}}/{{page.totalPage}}
+					&nbsp; &nbsp;总条数：<span class="badge">{{page.totalCount}}</span>
+			</span></li>
+			<li><a href="javascript:;" ng-if="isCanNext"
+				ng-click="changePage(true)">下一页&raquo;</a></li>
+		</ul>
+	</div>
+
+	<!-- 输入输出弹出框 开始-->
+	<div class="modal fade dialog" id="filesDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">标准输入输出文件窗口</h4>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-success alert-dismissable"
+						ng-if="isRequesting">加载文件数据中，请稍等</div>
+					<table class="table  table-hover " ng-if="!isRequesting">
+						<tbody>
+							<tr ng-repeat="standardFile in standardFiles">
+								<td>输入文件：{{standardFile.inputFilePageShowName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;输出文件：{{standardFile.outputFilePageShowName}}</td>
+								<td><button class="btn btn-info " type="button"
+										ng-click="downloadFiles($index)">下载文件</button>
+									<button class="btn btn-danger " type="button"
+										ng-click="deleteFiles($index)">删除文件</button>(注意，浏览器可能会禁止弹窗出现，请允许。不然没法下载)</td>
+							</tr>
+						</tbody>
+					</table>
+					<form enctype="multipart/form-data" id="problemFileUploadForm">
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 输入输出弹出框 结束-->
+
+	<!-- 详情弹出框 开始-->
+	<div class="modal fade dialog" id="detailDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">题目信息窗口</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table  table-hover ">
+						<tbody>
+							<tr>
+								<td>编号：{{currentDetailObj.problemId}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目名字：{{currentDetailObj.problemName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目类型：{{currentDetailObj.problemTypeId|
+									problemTypeFilter : problemTypes}}</td>
+							</tr>
+							<tr>
+								<td>创建者编号：{{currentDetailObj.problemCreatorId}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签：{{currentDetailObj.problemLabel}}</td>
+							</tr>
+							<tr>
+								<td>内存限制：{{currentDetailObj.memoryLimit}}KB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;时间限制：{{currentDetailObj.timeLimit}}毫秒&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目价值：{{currentDetailObj.problemValue}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目难度：{{currentDetailObj.problemDifficulty}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目版本：{{currentDetailObj.problemVersion}}</td>
+							</tr>
+							<tr>
+								<td>是否已经发布：{{currentDetailObj.isPublish == true ? "是" :
+									"否"}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目总提交数：{{currentDetailObj.totalSubmitCount}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;答对总数：{{currentDetailObj.totalRightCount}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									答对比率：{{currentDetailObj.totalRightCount/currentDetailObj.totalSubmitCount|
+									number:2}}</td>
+							</tr>
+							<tr>
+								<td>标准输入文件硬盘存放路径：{{currentDetailObj.inputFileRootPath}}</td>
+							</tr>
+							<tr>
+								<td>标准输出文件硬盘存放路径：{{currentDetailObj.outputFileRootPath}}</td>
+							</tr>
+							<tr>
+								<td>内容：<br />
+									<div id="detailDialogContent">{{currentDetailObj.problemContent
+										| formatToHtml : "detailDialogContent"}}</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 详情弹出框 结束-->
+
+	<!-- 修改弹出框 开始-->
+	<div class="modal fade dialog" id="updateDialog">
+		<div class="modal-dialog">
+			<form ng-submit="editSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">题目信息修改窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>题目名字：<input type="text"
+										ng-model="currentUpdateObj.problemName" maxlength="50"
+										required>{{error.problemNameError}}
+									</td>
+								</tr>
+								<tr>
+									<td>题目类型：<select ng-model="currentUpdateObj.problemTypeId"
+										required>
+											<option ng-repeat="type in problemTypes"
+												value="{{type.problemTypeId}}">{{type.problemTypeName}}</option>
+									</select>{{error.problemTypeIdError}}
+									</td>
+								</tr>
+								<tr>
+									<td>是否发布： <input type="radio"
+										ng-model="currentUpdateObj.isPublish" ng-value="false" />否 <input
+										type="radio" ng-model="currentUpdateObj.isPublish"
+										ng-value="true" />是
+									</td>
+								</tr>
+								<tr>
+									<td>内存限制：<input type="number"
+										ng-model="currentUpdateObj.memoryLimit" required>KB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										{{error.memoryLimitError}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;时间限制：<input
+										type="number" ng-model="currentUpdateObj.timeLimit" required>毫秒{{error.timeLimitError}}
+									</td>
+								</tr>
+								<tr>
+									<td>题目推荐难度：<input type="number"
+										ng-model="currentUpdateObj.problemDifficulty">
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目推荐价值：<input type="number"
+										ng-model="currentUpdateObj.problemValue">
+									</td>
+								</tr>
+								<tr>
+									<td>题目标签：<input style="width: 80%;" type="text"
+										ng-model="currentUpdateObj.problemLabel"
+										placeholder="多个标签，请用,（英文逗号）分开，一共60个字符以内" maxlength="60">
+									</td>
+								</tr>
+								<tr>
+									<td>内容：<br /> <script id="problemUpdateEditor" />
+										<p>请输入题目详细内容</p> </script>
+									</td>
+								</tr>
+							</tbody>
+
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">保存</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 修改弹出框 结束-->
+
+	<!-- 添加弹出框 开始-->
+	<div class="modal fade dialog" id="addDialog">
+		<div class="modal-dialog">
+			<form ng-submit="addSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">题目添加窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>题目名字：<input type="text" maxlength="50"
+										ng-model="currentAddObj.problemName" required>{{error.problemNameError}}
+									</td>
+								</tr>
+								<tr>
+									<td>题目类型：<select ng-model="currentAddObj.problemTypeId">
+											<option ng-repeat="type in problemTypes"
+												value="{{type.problemTypeId}}">{{type.problemTypeName}}</option>
+									</select>{{error.problemTypeIdError}}
+									</td>
+								</tr>
+								<tr>
+									<td>是否发布： <input type="radio"
+										ng-model="currentAddObj.isPublish" ng-value="false"
+										ng-init="currentAddObj.isPublish = false" ng-checked="true" />否
+										<input type="radio" ng-model="currentAddObj.isPublish"
+										ng-value="true" />是
+									</td>
+								</tr>
+								<tr>
+									<td>内存限制：<input type="number"
+										ng-model="currentAddObj.memoryLimit" required>KB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										{{error.timeLimitError}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;时间限制：<input
+										type="number" ng-model="currentAddObj.timeLimit" required>毫秒{{error.memoryLimitError}}
+									</td>
+								</tr>
+								<tr>
+									<td>题目推荐难度：<input type="number"
+										ng-model="currentAddObj.problemDifficulty">
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目推荐价值：<input type="number"
+										ng-model="currentAddObj.problemValue">
+									</td>
+								</tr>
+								<tr>
+									<td>题目标签：<input style="width: 80%;" type="text"
+										ng-model="currentAddObj.problemLabel"
+										placeholder="多个标签，请用,（英文逗号）分开，一共60个字符以内" maxlength="60">
+									</td>
+								</tr>
+								<tr>
+									<td>内容：<br /> <script id="problemAddEditor" />
+										<p>请输入题目详细内容</p> </script>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">添加</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<link href="css/fileinput.min.css" rel="stylesheet">
+<div load-Script ng-src="js/zh.js"></div>
+<div load-Script ng-src="js/fileinput.min.js"></div>

@@ -1,0 +1,144 @@
+<style>
+#detailDialog,#sendEmailDialog {
+	margin: 0;
+	width: 100%;
+}
+
+.modal-dialog {
+	width: 90%;
+}
+
+textarea {
+	width: 90%;
+}
+</style>
+<div class="common-content"
+	ng-controller="managerCompetitionApplicationCtr">
+	<div id="loadingTip" class="alert alert-success alert-dismissable"
+		ng-if="isLoadingData">加载数据中，请稍等</div>
+
+	<div ng-if="!isLoadingData">
+		比赛编号：<select id="selectedCompetitionId">
+			<option ng-repeat="id in allCompetitionIds" value="{{id}}"
+				selected="selected">{{id}}</option>
+		</select>
+		<button class="btn btn-primary common-topButton" type="button"
+			ng-click="getAllApplication()">查询申请表</button>
+		<table
+			class="table table-bordered table-hover table-striped common-dataTable">
+			<thead>
+				<tr>
+					<th class="span2">邮箱</th>
+					<th class="span1">申请人数</th>
+					<th class="span1">已发邮件</th>
+					<th class="span2">分配账号编号</th>
+					<th class="span3">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="application in allApplications">
+					<td class="span2">{{application.email}}</td>
+					<td class="span1">{{application.applicationPeopleCount}}</td>
+					<td class="span1">{{application.isHaveSendEmail == true?"已发" :
+						"未发"}}</td>
+					<td class="span2">{{application.competitionAccountId}}</td>
+					<td class="span3">
+						<button class="btn btn-success " type="button"
+							ng-click="detail($index)">详情</button>
+						<button class="btn btn-info " type="button"
+							ng-click="sendEmail($index)">发送邮件</button>
+						<button class="btn btn-primary " type="button"
+							ng-click="dispatchAccount($index)"
+							ng-if="application.competitionAccountId == null || application.competitionAccountId == -1">分配账号</button>
+						<button class="btn btn-primary " type="button"
+							ng-click="cancelDispatchAccount($index)"
+							ng-if="application.competitionAccountId != null && application.competitionAccountId != -1">取消分配</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+
+	<!-- 详情弹出框 开始-->
+	<div class="modal fade dialog" id="detailDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">申请单详情窗口</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table  table-hover ">
+						<tbody>
+							<tr>
+								<td>编号：{{currentDetailObj.competitionApplicationId}}</td>
+							</tr>
+							<tr>
+								<td>申请人数量：{{currentDetailObj.applicationPeopleCount}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;邮箱：{{currentDetailObj.email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;手机号：{{currentDetailObj.phone}}</td>
+							</tr>
+							<tr>
+								<td>申请参赛的比赛编号：{{currentDetailObj.competitionId}}</td>
+							</tr>
+							<tr>
+								<td>是否已经发邮件通知结果：{{currentDetailObj.isHaveSendEmail ==
+									true?"已发" : "未发"}}</td>
+							</tr>
+							<tr>
+								<td>给予分配的比赛账号编号：{{currentDetailObj.competitionAccountId}}</td>
+							</tr>
+							<tr>
+								<td>申请摘要：<br />{{currentDetailObj.applicationSummary}}
+								</td>
+							</tr>
+							<tr>
+								<td>申请正文：<br />{{currentDetailObj.applicationContent}}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 详情弹出框 结束-->
+
+
+	<!-- 发送邮件弹出框 开始-->
+	<div class="modal fade dialog" id="sendEmailDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">发送邮件窗口</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table  table-hover ">
+						<tbody>
+							<tr>
+								<td>申请编号：{{currentSendObj.competitionApplicationId}}</td>
+							</tr>
+							<tr>
+								<td>邮件内容(最多400字)：<br /> <textarea
+										ng-model="currentSendObj.noticeContent" rows="4" cols="100"
+										maxlength="400"></textarea>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success"
+						ng-click="sendEmailSubmit()">发送</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 发送邮件弹出框 结束-->
+</div>
+
+

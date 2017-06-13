@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.UserDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		user_id,account,password,nickname,source_file_root_path,right_problem_count,have_done_problem,email,submit_record_table_name,is_ban,total_solve_value,last_submit_time
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="userId != null">
+				and user_id = #{userId}
+			</if>
+			<if test="account != null">
+				and account = #{account}
+			</if>
+			<if test="password != null">
+				and password = #{password}
+			</if>
+			<if test="nickname != null">
+				and nickname = #{nickname}
+			</if>
+			<if test="sourceFileRootPath != null">
+				and source_file_root_path = #{sourceFileRootPath}
+			</if>
+			<if test="rightProblemCount != null">
+				and right_problem_count = #{rightProblemCount}
+			</if>
+			<if test="haveDoneProblem != null">
+				and have_done_problem = #{haveDoneProblem}
+			</if>
+			<if test="email != null">
+				and email = #{email}
+			</if>
+			<if test="submitRecordTableName != null">
+				and submit_record_table_name = #{submitRecordTableName}
+			</if>
+			<if test="isBan != null">
+				and is_ban = #{isBan}
+			</if>
+			<if test="totalSolveValue != null">
+				and total_solve_value = #{totalSolveValue}
+			</if>
+			<if test="lastSubmitTime != null">
+				and last_submit_time = #{lastSubmitTime}
+			</if>
+		</trim>
+	</sql>
+
+	<insert id="add" parameterType="cn.superman.web.po.User"
+		useGeneratedKeys="true" keyProperty="userId">
+		insert into
+		user(account,password,nickname,source_file_root_path,right_problem_count,have_done_problem,email,submit_record_table_name,is_ban,total_solve_value,last_submit_time)
+		values(#{account},#{password},#{nickname},#{sourceFileRootPath},#{rightProblemCount},#{haveDoneProblem},#{email},#{submitRecordTableName},#{isBan},#{totalSolveValue},#{lastSubmitTime})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.User">
+		update user
+		<set>
+			<if test="account != null">
+				account = #{account},
+			</if>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname},
+			</if>
+			<if test="sourceFileRootPath != null">
+				source_file_root_path = #{sourceFileRootPath},
+			</if>
+			<if test="rightProblemCount != null">
+				right_problem_count = #{rightProblemCount},
+			</if>
+			<if test="haveDoneProblem != null">
+				have_done_problem = #{haveDoneProblem},
+			</if>
+			<if test="email != null">
+				email = #{email},
+			</if>
+			<if test="submitRecordTableName != null">
+				submit_record_table_name = #{submitRecordTableName},
+			</if>
+			<if test="isBan != null">
+				is_ban = #{isBan},
+			</if>
+			<if test="totalSolveValue != null">
+				total_solve_value = #{totalSolveValue},
+			</if>
+			<if test="lastSubmitTime != null">
+				last_submit_time = #{lastSubmitTime},
+			</if>
+		</set>
+		where user_id = #{userId}
+	</update>
+	
+	<update id="countTotalSolveValue" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"
+			separator=";">
+			UPDATE USER
+			SET total_solve_value = (
+				SELECT
+					sum(problem_value)
+				FROM
+					problem
+				WHERE
+					problem_id IN (
+						SELECT
+							submit_problem_id
+						FROM
+							${item.submitRecordTableName}
+						WHERE
+							is_accepted = 1
+						AND submit_user_id = #{item.userId}
+						GROUP BY
+							submit_problem_id
+					)
+			)
+			WHERE
+				user_id = #{item.userId};
+		</foreach>
+	</update>
+	
+	<update id="countHaveDoneProblem" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"
+			separator=";">
+			UPDATE USER
+			SET have_done_problem = (
+				SELECT
+					count(p.id)
+				FROM
+					(
+						SELECT
+							submit_problem_id AS id
+						FROM
+							${item.submitRecordTableName}
+						WHERE
+							submit_user_id = #{item.userId}
+						GROUP BY
+							submit_problem_id
+					) AS p
+			)
+			WHERE
+				user_id = #{item.userId}
+		</foreach>
+	</update>
+	
+	<update id="countRightProblem" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index"
+			separator=";">
+			UPDATE USER
+			SET right_problem_count = (
+				SELECT
+					count(p.id)
+				FROM
+					(
+						SELECT
+							submit_problem_id AS id
+						FROM
+							${item.submitRecordTableName}
+						WHERE
+							submit_user_id = #{item.userId}
+						AND is_accepted = 1
+						GROUP BY
+							submit_problem_id
+					) AS p
+			)
+			WHERE
+				user_id = #{item.userId}
+		</foreach>
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from user
+		<where>
+			<if test="#{_parameter != null}">
+				and user_id = #{_parameter}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.User">
+		delete from user
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="find" resultType="cn.superman.web.po.User">
+		select
+		<include refid="Base_Column_List" />
+		from user
+	</select>
+
+	<select id="findById" parameterType="Integer" resultType="cn.superman.web.po.User">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		<where>
+			<if test="#{_parameter != null}">
+				and user_id = #{_parameter}
+			</if>
+		</where>
+	</select>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.User"
+		resultType="cn.superman.web.po.User">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+	
+	<select id="findWithLastSubmitTimeGap" 
+		resultType="cn.superman.web.po.User">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		<where>
+			last_submit_time BETWEEN #{beginTime} AND #{endTime}
+		</where>
+	</select>
+
+	<select id="queryTotalCount" resultType="Long">
+		select count(*)
+		from
+		user
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.User"
+		resultType="Long">
+		select count(*)
+		from user
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+	<update id="createNewSubmitRecordTable" parameterType="String">
+		create
+		table ${_parameter}(
+		submit_id BIGINT primary key
+		AUTO_INCREMENT comment
+		'提交记录编号',
+		submit_time datetime comment '提交时间',
+		submit_problem_id BIGINT
+		comment '提交记录对应的题目编号',
+		submit_user_id int
+		comment '提交记录对应的用户编号',
+		score
+		double DEFAULT 0 comment '总分',
+		is_accepted bit DEFAULT 0
+		comment '是否通过',
+		details TEXT comment
+		'答题明细（JSON数据，即每一个测试用例的结果）（状态，用时，内存消耗，测试输入文件路径，测试输出文件路径）',
+		code_language VARCHAR(20) comment '代码语言',
+		code_file_path VARCHAR(255)
+		comment '代码文件保存路径',
+		submit_record_table_name varchar(150) comment
+		'方便操作的需要,用个字段记住表名好了'
+		)
+	</update>
+</mapper>

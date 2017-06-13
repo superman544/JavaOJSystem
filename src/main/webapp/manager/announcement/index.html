@@ -1,0 +1,211 @@
+
+<style>
+#detailDialog,#addDialog,#updateDialog {
+	margin: 0;
+	width: 100%;
+}
+
+.modal-dialog {
+	width: 90%;
+}
+
+textarea {
+	width: 90%;
+}
+</style>
+<div class="common-content" ng-controller="managerAnnouncementCtr">
+	<div id="loadingTip" class="alert alert-success alert-dismissable"
+		ng-if="isLoadingData">加载数据中，请稍等</div>
+
+	<div ng-if="!isLoadingData">
+		<button class="btn btn-primary common-topButton" type="button"
+			ng-click="add()">添加公告</button>
+		<button class="btn btn-success common-topButton" type="button"
+			ng-click="refresh()">刷新数据</button>
+
+		<table
+			class="table table-bordered table-hover table-striped common-dataTable">
+			<thead>
+				<tr>
+					<th class="span1">编号</th>
+					<th class="span2">公告标题</th>
+					<th class="span2">是否已公布</th>
+					<th class="span3">创建时间</th>
+					<th class="span3">最近一次公布时间</th>
+					<th class="span3">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="announcement in page.datas">
+					<td class="span1">{{announcement.announcementId}}</td>
+					<td class="span2">{{announcement.announcementTitle}}</td>
+					<td class="span2">{{announcement.isPublish == true?"是" : "否"}}</td>
+					<td class="span3">{{announcement.announcementCreateTime |
+						stringDateFormat:'yyyy-MM-dd HH:mm:ss' }}</td>
+					<td class="span3">{{announcement.announcementPublishTime |
+						stringDateFormat:'yyyy-MM-dd HH:mm:ss'}}</td>
+					<td class="span3">
+						<button class="btn btn-success " type="button"
+							ng-click="detail($index)">详情</button>
+						<button class="btn btn-info " type="button"
+							ng-click="edit($index)">修改</button>
+						<button class="btn btn-danger " type="button"
+							ng-click="delete($index)">删除</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<ul class="pager">
+			<li><a href="javascript:;" ng-if="isCanPre"
+				ng-click="changePage(false)">&laquo;上一页</a></li>
+			<li class="active"><span>页码：{{page.currentPage}}/{{page.totalPage}}
+					&nbsp; &nbsp;总条数：<span class="badge">{{page.totalCount}}</span>
+			</span></li>
+			<li><a href="javascript:;" ng-if="isCanNext"
+				ng-click="changePage(true)">下一页&raquo;</a></li>
+		</ul>
+	</div>
+
+	<!-- 详情弹出框 开始-->
+	<div class="modal fade dialog" id="detailDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">题目信息窗口</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table  table-hover ">
+						<tbody>
+							<tr>
+								<td>编号：{{currentDetailObj.announcementId}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标题：{{currentDetailObj.announcementTitle}}</td>
+							</tr>
+							<tr>
+								<td>公告创建者编号：{{currentDetailObj.announcementCreateManagerId}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;是否已经发布：{{currentDetailObj.isPublish
+									== true?"是" : "否"}}</td>
+							</tr>
+							<tr>
+								<td>创建时间：{{currentDetailObj.announcementCreateTime |
+									stringDateFormat:'yyyy-MM-dd HH:mm:ss' }}
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发布时间：{{currentDetailObj.announcementPublishTime
+									| stringDateFormat:'yyyy-MM-dd HH:mm:ss'}}</td>
+							</tr>
+							<tr>
+								<td>简介：<br />{{currentDetailObj.announcementIntroduction}}
+								</td>
+							</tr>
+							<tr>
+								<td>内容：<br />
+									<div id="detailDialogContent">{{currentDetailObj.announcementContent
+										| formatToHtml : "detailDialogContent"}}</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 详情弹出框 结束-->
+
+	<!-- 修改弹出框 开始-->
+	<div class="modal fade dialog" id="updateDialog">
+		<div class="modal-dialog">
+			<form ng-submit="editSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">题目类型信息修改窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>标题：<input type="text"
+										ng-model="currentUpdateObj.announcementTitle" maxlength="30" required>{{error.announcementTitleError}}
+									</td>
+								</tr>
+								<tr>
+									<td>是否发布： <input type="radio"
+										ng-model="currentUpdateObj.isPublish" ng-value="false" />否 <input
+										type="radio" ng-model="currentUpdateObj.isPublish"
+										ng-value="true" />是
+									</td>
+								</tr>
+								<tr>
+									<td>简介：<br /> <textarea rows="5" cols="50"
+											ng-model="currentUpdateObj.announcementIntroduction"
+											maxlength="250"></textarea>
+										{{error.announcementIntroductionError}}
+									</td>
+								</tr>
+								<tr>
+									<td>内容：<br /> <script id="announcementUpdateEditor" />
+										<p>请输入公告详细内容</p> </script>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">保存</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 修改弹出框 结束-->
+
+	<!-- 添加弹出框 开始-->
+	<div class="modal fade dialog" id="addDialog">
+		<div class="modal-dialog">
+			<form ng-submit="addSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">公告添加添加窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>标题：<input type="text"
+										ng-model="currentAddObj.announcementTitle" maxlength="30" required>{{error.announcementTitleError}}
+									</td>
+								</tr>
+								<tr>
+									<td>是否发布： <input type="radio"
+										ng-model="currentAddObj.isPublish" value="false" />否 <input
+										type="radio" ng-model="currentAddObj.isPublish" value="true" />是
+									</td>
+								</tr>
+								<tr>
+									<td>简介：<br /> <textarea rows="5" cols="50"
+											ng-model="currentAddObj.announcementIntroduction"
+											maxlength="250"></textarea>
+										{{error.announcementIntroductionError}}
+									</td>
+								</tr>
+								<tr>
+									<td>内容：<br /> <script id="announcementAddEditor" />
+										<p>请输入公告详细内容</p> </script>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">添加</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

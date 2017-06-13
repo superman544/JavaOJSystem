@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.AnnouncementDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		announcement_id,announcement_title,announcement_introduction,announcement_content,announcement_create_manager_id,announcement_create_time,announcement_publish_time,is_publish
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="announcementId != null">
+				and announcement_id = #{announcementId}
+			</if>
+			<if test="announcementTitle != null">
+				and announcement_title = #{announcementTitle}
+			</if>
+			<if test="announcementIntroduction != null">
+				and announcement_introduction =
+				#{announcementIntroduction}
+			</if>
+			<if test="announcementContent != null">
+				and announcement_content =
+				#{announcementContent}
+			</if>
+			<if test="announcementCreateManagerId != null">
+				and announcement_create_manager_id =
+				#{announcementCreateManagerId}
+			</if>
+			<if test="announcementCreateTime != null">
+				and announcement_create_time = #{announcementCreateTime}
+			</if>
+			<if test="announcementPublishTime != null">
+				and announcement_publish_time =
+				#{announcementPublishTime}
+			</if>
+			<if test="isPublish != null">
+				and is_publish = #{isPublish}
+			</if>
+		</trim>
+	</sql>
+
+	<insert id="add" parameterType="cn.superman.web.po.Announcement"
+		useGeneratedKeys="true" keyProperty="announcementId">
+		insert into
+		announcement(announcement_title,announcement_introduction,announcement_content,announcement_create_manager_id,announcement_create_time,announcement_publish_time,is_publish)
+		values(#{announcementTitle},#{announcementIntroduction},#{announcementContent},#{announcementCreateManagerId},#{announcementCreateTime},#{announcementPublishTime},#{isPublish})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.Announcement">
+		update announcement
+		<set>
+			<if test="announcementTitle != null">
+				announcement_title = #{announcementTitle},
+			</if>
+			<if test="announcementIntroduction != null">
+				announcement_introduction =
+				#{announcementIntroduction},
+			</if>
+			<if test="announcementContent != null">
+				announcement_content =
+				#{announcementContent},
+			</if>
+			<if test="announcementCreateManagerId != null">
+				announcement_create_manager_id =
+				#{announcementCreateManagerId},
+			</if>
+			<if test="announcementCreateTime != null">
+				announcement_create_time = #{announcementCreateTime},
+			</if>
+			<if test="announcementPublishTime != null">
+				announcement_publish_time =
+				#{announcementPublishTime},
+			</if>
+			<if test="isPublish != null">
+				is_publish = #{isPublish},
+			</if>
+		</set>
+		where announcement_id = #{announcementId}
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from announcement
+		<where>
+			<if test="#{_parameter != null}">
+				and announcement_id = #{_parameter}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.Announcement">
+		delete from announcement
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="find" resultType="cn.superman.web.po.Announcement">
+		select
+		<include refid="Base_Column_List" />
+		from announcement
+	</select>
+
+	<select id="findById" parameterType="Integer"
+		resultType="cn.superman.web.po.Announcement">
+		select
+		<include refid="Base_Column_List" />
+		from announcement
+		<where>
+			<if test="#{_parameter != null}">
+				and announcement_id = #{_parameter}
+			</if>
+		</where>
+	</select>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.Announcement"
+		resultType="cn.superman.web.po.Announcement">
+		select
+		<include refid="Base_Column_List" />
+		from announcement
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+	<select id="queryTotalCount" resultType="Long">
+		select count(*)
+		from
+		announcement
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.Announcement"
+		resultType="Long">
+		select count(*)
+		from announcement
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+
+</mapper>

@@ -1,0 +1,57 @@
+* {
+	word-break: break-all;
+}
+
+body {
+	font-size: 16px;
+	font-size: 1em;
+}
+
+#loadingTip {
+	display: inline-block;
+	text-align: center;
+	font-size: 1.5em;
+	width: 50%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate3d(-50%, -50%, 0);
+}
+
+.common-content {
+	width: 90%;
+	margin-top: 2%;
+	margin-left: 5%;
+}
+
+.common-topButton {
+	font-size: 1em;
+}
+
+.common-dataTable {
+	margin-top: 10px;
+}
+
+.common-dataTable tbody tr td {
+	vertical-align: middle;
+}
+
+#updateDialog {
+	margin-top: 10%;
+}
+
+#addDialog {
+	margin-top: 10%;
+}
+
+#detailDialog {
+	margin-top: 10%;
+}
+
+#deleteDialog {
+	margin-top: 20%;
+}
+
+textarea {
+	resize: none;
+}

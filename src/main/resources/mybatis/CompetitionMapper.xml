@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.CompetitionDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		competition_id,competition_name,competition_description,competition_begin_time,competition_end_time,competition_players_count,is_close,is_publish,competition_problem_ids,competition_content_root_path,is_can_declare,is_judge,competition_apply_begin_time,competition_apply_end_time
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="competitionId != null">
+				and competition_id = #{competitionId}
+			</if>
+			<if test="competitionName != null">
+				and competition_name = #{competitionName}
+			</if>
+			<if test="competitionDescription != null">
+				and competition_description =
+				#{competitionDescription}
+			</if>
+			<if test="competitionBeginTime != null">
+				and competition_begin_time =
+				#{competitionBeginTime}
+			</if>
+			<if test="competitionEndTime != null">
+				and competition_end_time =
+				#{competitionEndTime}
+			</if>
+			<if test="competitionBeginTime != null">
+				and competition_apply_begin_time =
+				#{competitionApplyBeginTime}
+			</if>
+			<if test="competitionEndTime != null">
+				and competition_apply_end_time =
+				#{competitionApplyEndTime}
+			</if>
+			<if test="competitionPlayersCount != null">
+				and competition_players_count =
+				#{competitionPlayersCount}
+			</if>
+			<if test="isClose != null">
+				and is_close =
+				#{isClose}
+			</if>
+			<if test="isPublish != null">
+				and is_publish = #{isPublish}
+			</if>
+			<if test="isCanDeclare != null">
+				and is_can_declare = #{isCanDeclare}
+			</if>
+			<if test="isJudge != null">
+				and is_judge = #{isJudge}
+			</if>
+			<if test="competitionProblemIds != null">
+				and competition_problem_ids = #{competitionProblemIds}
+			</if>
+			<if test="competitionContentRootPath != null">
+				and competition_content_root_path =
+				#{competitionContentRootPath}
+			</if>
+		</trim>
+	</sql>
+
+	<insert id="add" parameterType="cn.superman.web.po.Competition"
+		useGeneratedKeys="true" keyProperty="competitionId">
+		insert into
+		competition(competition_name,competition_description,competition_begin_time,competition_end_time,competition_players_count,is_close,is_publish,competition_problem_ids,competition_content_root_path,is_can_declare,is_judge,competition_apply_begin_time,competition_apply_end_time)
+		values(#{competitionName},#{competitionDescription},#{competitionBeginTime},#{competitionEndTime},#{competitionPlayersCount},#{isClose},#{isPublish},#{competitionProblemIds},#{competitionContentRootPath},#{isCanDeclare},#{isJudge},#{competitionApplyBeginTime},#{competitionApplyEndTime})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.Competition">
+		update competition
+		<set>
+			<if test="competitionName != null">
+				competition_name = #{competitionName},
+			</if>
+			<if test="competitionDescription != null">
+				competition_description =
+				#{competitionDescription},
+			</if>
+			<if test="competitionBeginTime != null">
+				competition_begin_time =
+				#{competitionBeginTime},
+			</if>
+			<if test="competitionEndTime != null">
+				competition_end_time =
+				#{competitionEndTime},
+			</if>
+			<if test="competitionBeginTime != null">
+				competition_apply_begin_time =
+				#{competitionApplyBeginTime},
+			</if>
+			<if test="competitionEndTime != null">
+				competition_apply_end_time =
+				#{competitionApplyEndTime},
+			</if>
+			<if test="competitionPlayersCount != null">
+				competition_players_count =
+				#{competitionPlayersCount},
+			</if>
+			<if test="isClose != null">
+				is_close =
+				#{isClose},
+			</if>
+			<if test="isPublish != null">
+				is_publish = #{isPublish},
+			</if>
+			<if test="isCanDeclare != null">
+				is_can_declare = #{isCanDeclare},
+			</if>
+			<if test="isJudge != null">
+				is_judge = #{isJudge},
+			</if>
+			<if test="competitionProblemIds != null">
+				competition_problem_ids = #{competitionProblemIds},
+			</if>
+			<if test="competitionContentRootPath != null">
+				competition_content_root_path =
+				#{competitionContentRootPath},
+			</if>
+		</set>
+		where competition_id = #{competitionId}
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from competition
+		<where>
+			<if test="#{_parameter != null}">
+				and competition_id = #{_parameter}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.Competition">
+		delete from competition
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="find" resultType="cn.superman.web.po.Competition">
+		select
+		<include refid="Base_Column_List" />
+		from competition
+		ORDER BY
+		competition_begin_time,
+		competition_apply_begin_time
+	</select>
+
+	<select id="findById" parameterType="Integer"
+		resultType="cn.superman.web.po.Competition">
+		select
+		<include refid="Base_Column_List" />
+		from competition
+		<where>
+			<if test="#{_parameter != null}">
+				and competition_id = #{_parameter}
+			</if>
+		</where>
+	</select>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.Competition"
+		resultType="cn.superman.web.po.Competition">
+		select
+		<include refid="Base_Column_List" />
+		from competition
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+		ORDER BY
+		competition_begin_time,
+		competition_apply_begin_time
+	</select>
+
+	<select id="queryTotalCount" resultType="Long">
+		select count(*)
+		from
+		competition
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.Competition"
+		resultType="Long">
+		select count(*)
+		from competition
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+
+</mapper>

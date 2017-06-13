@@ -1,0 +1,93 @@
+<style>
+#leaderboardContent {
+	margin: 50px;
+	text-align: center;
+}
+
+#leaderboardContent .radius {
+	border-radius: 50px;
+}
+</style>
+<div id="leaderboardContent" ng-controller="leaderboardCtr">
+	<div class="col-md-4 radius">
+		<div class="panel panel-primary ">
+			<div class="panel-heading">一共解决的题目总数TOP50(每天早上6点更新)</div>
+			<div class="panel-body">
+				<table class="table  table-striped">
+					<thead>
+						<tr>
+							<th class="col-md-2">昵称</th>
+							<th class="col-md-2">邮箱</th>
+							<th class="col-md-2">做过的</th>
+							<th class="col-md-2">做对的</th>
+							<th class="col-md-2">总价值</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="haveDone in haveDoneProblemTop50">
+							<td class="col-md-2">{{haveDone.nickname}}</td>
+							<td class="col-md-2">{{haveDone.email}}</td>
+							<td class="col-md-2">{{haveDone.rightProblemCount}}</td>
+							<td class="col-md-2">{{haveDone.haveDoneProblem}}</td>
+							<td class="col-md-2">{{haveDone.totalSolveValue}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 radius">
+		<div class="panel panel-primary">
+			<div class="panel-heading">一共做对的题目总数TOP50(每天早上6点更新)</div>
+			<div class="panel-body">
+				<table class="table  table-striped">
+					<thead>
+						<tr>
+							<th class="col-md-2">昵称</th>
+							<th class="col-md-2">邮箱</th>
+							<th class="col-md-2">做过的</th>
+							<th class="col-md-2">做对的</th>
+							<th class="col-md-2">总价值</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="rightProblem in rightProblemTop50">
+							<td class="col-md-2">{{rightProblem.nickname}}</td>
+							<td class="col-md-2">{{rightProblem.email}}</td>
+							<td class="col-md-2">{{rightProblem.rightProblemCount}}</td>
+							<td class="col-md-2">{{rightProblem.haveDoneProblem}}</td>
+							<td class="col-md-2">{{rightProblem.totalSolveValue}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 radius">
+		<div class="panel panel-primary">
+			<div class="panel-heading">一共解决的题目总价值TOP50(每天早上6点更新)</div>
+			<div class="panel-body">
+				<table class="table  table-striped">
+					<thead>
+						<tr>
+							<th class="col-md-2">昵称</th>
+							<th class="col-md-2">邮箱</th>
+							<th class="col-md-2">做过的</th>
+							<th class="col-md-2">做对的</th>
+							<th class="col-md-2">总价值</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="sloveProblem in sloveProblemTotalValueTop50">
+							<td class="col-md-2">{{sloveProblem.nickname}}</td>
+							<td class="col-md-2">{{sloveProblem.email}}</td>
+							<td class="col-md-2">{{sloveProblem.rightProblemCount}}</td>
+							<td class="col-md-2">{{sloveProblem.haveDoneProblem}}</td>
+							<td class="col-md-2">{{sloveProblem.totalSolveValue}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

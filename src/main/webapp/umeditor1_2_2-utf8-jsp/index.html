@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>UMEDITOR 完整demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="themes/default/css/umeditor.css" type="text/css"
+	rel="stylesheet">
+<script type="text/javascript" src="third-party/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="umeditor.min.js"></script>
+<script type="text/javascript" src="lang/zh-cn/zh-cn.js"></script>
+</head>
+<body>
+	<h1>测试题目上传界面</h1>
+
+	<!--style给定宽度可以影响编辑器的最终宽度-->
+	<script type="text/plain" id="problemEditor"
+		style="width:1000px;height:240px;">
+
+    <p>这里我可以写一些输入提示</p>
+</script>
+
+	题目名称：
+	<input type="text" name="problem_name" id="problem_name">
+	<br /> 题目类型：
+	<input type="text" name="problem_type" id="problem_type">
+	<br /> 时间限制：
+	<input type="text" name="time_limit" id="time_limit">
+	<br /> 内存限制：
+	<input type="text" name="memory_limit" id="memory_limit">
+	<br />
+	<button value="提交" onclick="return submit()" />
+	<script type="text/javascript">
+		//实例化编辑器
+		var um = UM.getEditor('problemEditor');
+
+		function submit() {
+			console.log(um.getContent());
+			console.log($("#problem_name").val());
+			$.ajax({
+				type : "post",
+				url : "path",
+				data : {
+					problemName : $("#problem_name").val(),
+					problemContent : um.getContent(),
+					problemType : $("#problem_type").val(),
+					timeLimit : $("#time_limit").val(),
+					memoryLimit : $("#memory_limit").val()
+				},
+				async : false,
+				dataType : "text",
+				success : function(xmlobj) {
+
+				}
+
+			});
+		}
+	</script>
+
+</body>
+</html>

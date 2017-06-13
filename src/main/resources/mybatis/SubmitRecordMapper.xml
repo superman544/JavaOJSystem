@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.SubmitRecordDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		submit_id,submit_time,submit_problem_id,submit_user_id,score,is_accepted,details,code_language,code_file_path,submit_record_table_name
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="submitId != null">
+				and submit_id = #{submitId}
+			</if>
+			<if test="submitTime != null">
+				and submit_time = #{submitTime}
+			</if>
+			<if test="submitProblemId != null">
+				and submit_problem_id = #{submitProblemId}
+			</if>
+			<if test="submitUserId != null">
+				and submit_user_id = #{submitUserId}
+			</if>
+			<if test="score != null">
+				and score = #{score}
+			</if>
+			<if test="isAccepted != null">
+				and is_accepted = #{isAccepted}
+			</if>
+			<if test="details != null">
+				and details = #{details}
+			</if>
+			<if test="codeLanguage != null">
+				and code_language = #{codeLanguage}
+			</if>
+			<if test="codeFilePath != null">
+				and code_file_path = #{codeFilePath}
+			</if>
+			<if test="submitRecordTableName != null">
+				and submit_record_table_name = #{submitRecordTableName}
+			</if>
+		</trim>
+	</sql>
+	<insert id="add" parameterType="cn.superman.web.po.SubmitRecord"
+		useGeneratedKeys="true" keyProperty="submitId">
+		insert into
+		${submitRecordTableName}(submit_time,
+		submit_problem_id,submit_user_id,score,is_accepted,details,code_language,code_file_path,submit_record_table_name)
+		values(#{submitTime},#{submitProblemId},#{submitUserId},#{score},#{isAccepted},#{details},#{codeLanguage},#{codeFilePath},#{submitRecordTableName})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.SubmitRecord">
+		update ${submitRecordTableName}
+		<set>
+			<if test="submitTime != null">
+				submit_time = #{submitTime},
+			</if>
+			<if test="submitProblemId != null">
+				submit_problem_id = #{submitProblemId},
+			</if>
+			<if test="submitUserId != null">
+				submit_user_id = #{submitUserId},
+			</if>
+			<if test="score != null">
+				score = #{score},
+			</if>
+			<if test="isAccepted != null">
+				is_accepted = #{isAccepted},
+			</if>
+			<if test="details != null">
+				details = #{details},
+			</if>
+			<if test="codeLanguage != null">
+				code_language = #{codeLanguage},
+			</if>
+			<if test="codeFilePath != null">
+				code_file_path = #{codeFilePath},
+			</if>
+			<if test="submitRecordTableName != null">
+				submit_record_table_name = #{submitRecordTableName},
+			</if>
+		</set>
+		where submit_id = #{submitId}
+	</update>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.SubmitRecord">
+		delete from ${submitRecordTableName}
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.SubmitRecord"
+		resultType="cn.superman.web.po.SubmitRecord">
+		select
+		<include refid="Base_Column_List" />
+		from ${submitRecordTableName}
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.SubmitRecord"
+		resultType="Long">
+		select count(*)
+		from ${submitRecordTableName}
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+</mapper>

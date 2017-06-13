@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.RoleDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		role_id,role_name,permissions
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="roleId != null">
+				and role_id = #{roleId}
+			</if>
+			<if test="roleName != null">
+				and role_name = #{roleName}
+			</if>
+			<if test="permissions != null">
+				and permissions = #{permissions}
+			</if>
+		</trim>
+	</sql>
+
+	<insert id="add" parameterType="cn.superman.web.po.Role"
+		useGeneratedKeys="true" keyProperty="roleId">
+		insert into
+		role(role_name,permissions)
+		values(#{roleName},#{permissions})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.Role">
+		update role
+		<set>
+			<if test="roleName != null">
+				role_name = #{roleName},
+			</if>
+			<if test="permissions != null">
+				permissions = #{permissions},
+			</if>
+		</set>
+		where role_id = #{roleId}
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from role
+		<where>
+			<if test="#{_parameter != null}">
+				and role_id = #{_parameter}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.Role">
+		delete from role
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="find" resultType="cn.superman.web.po.Role">
+		select
+		<include refid="Base_Column_List" />
+		from role
+	</select>
+
+	<select id="findById" parameterType="Integer" resultType="cn.superman.web.po.Role">
+		select
+		<include refid="Base_Column_List" />
+		from
+		<where>
+			<if test="#{_parameter != null}">
+				and role_id = #{_parameter}
+			</if>
+		</where>
+	</select>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.Role"
+		resultType="cn.superman.web.po.Role">
+		select
+		<include refid="Base_Column_List" />
+		from role
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+	<select id="queryTotalCount" resultType="Long">
+		select count(*)
+		from
+		role
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.Role"
+		resultType="Long">
+		select count(*)
+		from role
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+
+</mapper>

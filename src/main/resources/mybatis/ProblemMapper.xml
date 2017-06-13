@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.ProblemDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		problem_id,problem_type_id,problem_name,input_file_root_path,output_file_root_path,problem_label,time_limit,memory_limit,problem_creator_id,problem_content,problem_difficulty,problem_value,problem_version,is_publish,total_submit_count,total_right_count
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="problemId != null">
+				and problem_id = #{problemId}
+			</if>
+			<if test="problemTypeId != null">
+				and problem_type_id = #{problemTypeId}
+			</if>
+			<if test="problemName != null">
+				and problem_name = #{problemName}
+			</if>
+			<if test="inputFileRootPath != null">
+				and input_file_root_path = #{inputFileRootPath}
+			</if>
+			<if test="outputFileRootPath != null">
+				and output_file_root_path = #{outputFileRootPath}
+			</if>
+			<if test="problemLabel != null">
+				and problem_label = #{problemLabel}
+			</if>
+			<if test="timeLimit != null">
+				and time_limit = #{timeLimit}
+			</if>
+			<if test="memoryLimit != null">
+				and memory_limit = #{memoryLimit}
+			</if>
+			<if test="problemCreatorId != null">
+				and problem_creator_id = #{problemCreatorId}
+			</if>
+			<if test="problemContent != null">
+				and problem_content = #{problemContent}
+			</if>
+			<if test="problemDifficulty != null">
+				and problem_difficulty = #{problemDifficulty}
+			</if>
+			<if test="problemValue != null">
+				and problem_value = #{problemValue}
+			</if>
+			<if test="problemVersion != null">
+				and problem_version = #{problemVersion}
+			</if>
+			<if test="isPublish != null">
+				and is_publish = #{isPublish}
+			</if>
+			<!-- <if test="allRightPeopleIds != null"> -->
+			<!-- and all_right_people_ids = #{allRightPeopleIds} -->
+			<!-- </if> -->
+			<if test="totalSubmitCount != null">
+				and total_submit_count = #{totalSubmitCount}
+			</if>
+			<if test="totalRightCount != null">
+				and total_right_count = #{totalRightCount}
+			</if>
+		</trim>
+	</sql>
+
+	<insert id="add" parameterType="cn.superman.web.po.Problem"
+		useGeneratedKeys="true" keyProperty="problemId">
+		insert into
+		problem(problem_type_id,problem_name,
+		input_file_root_path,output_file_root_path,problem_label,time_limit,memory_limit,problem_creator_id,problem_content,problem_difficulty,problem_value,problem_version,is_publish,all_right_people_ids,total_submit_count,total_right_count)
+		values(#{problemTypeId},#{problemName},#{inputFileRootPath},#{outputFileRootPath},#{problemLabel},#{timeLimit},#{memoryLimit},#{problemCreatorId},#{problemContent},#{problemDifficulty},#{problemValue},#{problemVersion},#{isPublish},#{allRightPeopleIds},#{totalSubmitCount},#{totalRightCount})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.Problem">
+		update problem
+		<set>
+			<if test="problemName != null">
+				problem_name = #{problemName},
+			</if>
+			<if test="problemTypeId != null">
+				problem_type_id = #{problemTypeId},
+			</if>
+			<if test="inputFileRootPath != null">
+				input_file_root_path = #{inputFileRootPath},
+			</if>
+			<if test="outputFileRootPath != null">
+				output_file_root_path = #{outputFileRootPath},
+			</if>
+			<if test="problemLabel != null">
+				problem_label = #{problemLabel},
+			</if>
+			<if test="timeLimit != null">
+				time_limit = #{timeLimit},
+			</if>
+			<if test="memoryLimit != null">
+				memory_limit = #{memoryLimit},
+			</if>
+			<if test="problemCreatorId != null">
+				problem_creator_id = #{problemCreatorId},
+			</if>
+			<if test="problemContent != null">
+				problem_content = #{problemContent},
+			</if>
+			<if test="problemDifficulty != null">
+				problem_difficulty = #{problemDifficulty},
+			</if>
+			<if test="problemValue != null">
+				problem_value = #{problemValue},
+			</if>
+			<if test="problemVersion != null">
+				problem_version = #{problemVersion},
+			</if>
+			<if test="isPublish != null">
+				is_publish = #{isPublish},
+			</if>
+			<if test="allRightPeopleIds != null">
+				all_right_people_ids = #{allRightPeopleIds},
+			</if>
+			<if test="totalSubmitCount != null">
+				total_submit_count = #{totalSubmitCount},
+			</if>
+			<if test="totalRightCount != null">
+				total_right_count = #{totalRightCount},
+			</if>
+		</set>
+		where problem_id = #{problemId}
+	</update>
+
+	<update id="userSloveProblem">
+		update problem
+		<set>
+			all_right_people_ids =
+			concat(all_right_people_ids,#{userIdData}),
+			total_submit_count
+			= total_submit_count + 1,
+			total_right_count =
+			total_right_count + 1
+		</set>
+		where problem_id =
+		#{problemId}
+	</update>
+
+	<update id="increaseSubmitProblemCount" parameterType="Integer">
+		update problem
+		<set>
+			total_submit_count = total_submit_count + 1
+		</set>
+		where problem_id =
+		#{_parameter}
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from problem
+		<where>
+			<if test="#{_parameter != null}">
+				and problem_id = #{_parameter}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.Problem">
+		delete from problem
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="find" resultType="cn.superman.web.po.Problem">
+		select
+		<include refid="Base_Column_List" />
+		from problem
+	</select>
+
+	<select id="findById" parameterType="Integer" resultType="cn.superman.web.po.Problem">
+		select
+		<include refid="Base_Column_List" />
+		from problem
+		<where>
+			<if test="#{_parameter != null}">
+				and problem_id = #{_parameter}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPulishProblemByLikeName" parameterType="String"
+		resultType="cn.superman.web.po.Problem">
+		select
+		<include refid="Base_Column_List" />
+		from problem where problem_name like '%${_parameter}%' and is_publish
+		= 1
+	</select>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.Problem"
+		resultType="cn.superman.web.po.Problem">
+		select
+		<include refid="Base_Column_List" />
+		from problem
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+	<select id="queryTotalCount" resultType="Long">
+		select count(*)
+		from
+		problem
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.Problem"
+		resultType="Long">
+		select count(*)
+		from problem
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+</mapper>

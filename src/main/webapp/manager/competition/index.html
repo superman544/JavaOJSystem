@@ -1,0 +1,370 @@
+<style>
+#detailDialog,#addDialog,#updateDialog {
+	margin: 0;
+	width: 100%;
+}
+
+.modal-dialog {
+	width: 90%;
+}
+
+textarea {
+	width: 90%;
+}
+
+#reportDialog,#judgeDialog,#closeDialog {
+	text-align: center;
+}
+</style>
+<div class="common-content" ng-controller="managerCompetitionCtr">
+	<div id="loadingTip" class="alert alert-success alert-dismissable"
+		ng-if="isLoadingData">加载数据中，请稍等</div>
+
+	<div ng-if="!isLoadingData">
+		<button class="btn btn-primary common-topButton" type="button"
+			ng-click="add()">创建比赛</button>
+		<button class="btn btn-success common-topButton" type="button"
+			ng-click="refresh()">刷新数据</button>
+
+		<table
+			class="table table-bordered table-hover table-striped common-dataTable">
+			<thead>
+				<tr>
+					<th class="span1">编号</th>
+					<th class="span2">比赛名字</th>
+					<th class="span2">开始时间</th>
+					<th class="span2">结束时间</th>
+					<th class="span1">公布</th>
+					<th class="span1">公开</th>
+					<th class="span1">判题</th>
+					<th class="span1">关闭</th>
+					<th class="span3">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="competition in page.datas">
+					<td class="span1">{{competition.competitionId}}</td>
+					<td class="span2">{{competition.competitionName}}</td>
+					<td class="span2">{{competition.competitionBeginTime |
+						stringDateFormat:'yyyy-MM-dd HH:mm:ss' }}</td>
+					<td class="span2">{{competition.competitionEndTime |
+						stringDateFormat:'yyyy-MM-dd HH:mm:ss' }}</td>
+					<td class="span1">{{competition.isPublish== true ? "是" : "否"}}</td>
+					<td class="span1">{{competition.isCanDeclare== true ? "是" :
+						"否"}}</td>
+					<td class="span1">{{competition.isJudge== true ? "已判" : "未判"}}</td>
+					<td class="span1">{{competition.isClose== true ? "已关" : "未关"}}</td>
+					<td class="span2">
+						<button class="btn btn-success " type="button"
+							ng-click="detail($index)">详情</button>
+						<button class="btn btn-info " type="button"
+							ng-click="edit($index)">修改</button>
+						<button class="btn btn-danger " type="button"
+							ng-click="delete($index)">删除</button> <br /> <br />
+						<button class="btn btn-success " type="button"
+							ng-click="report($index)">报告</button>
+						<button class="btn btn-info " type="button"
+							ng-click="judge($index)">判题</button>
+						<button class="btn btn-danger " type="button"
+							ng-click="close($index)">关闭</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<ul class="pager">
+			<li><a href="javascript:;" ng-if="isCanPre"
+				ng-click="changePage(false)">&laquo;上一页</a></li>
+			<li class="active"><span>页码：{{page.currentPage}}/{{page.totalPage}}
+					&nbsp; &nbsp;总条数：<span class="badge">{{page.totalCount}}</span>
+			</span></li>
+			<li><a href="javascript:;" ng-if="isCanNext"
+				ng-click="changePage(true)">下一页&raquo;</a></li>
+		</ul>
+	</div>
+
+	<!-- 关闭弹出框 开始-->
+	<div class="modal fade dialog" id="closeDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">关闭比赛窗口</h4>
+				</div>
+				<div class="modal-body">
+					<div>关闭比赛后，将会释放跟这个比赛所有有关的比赛账号信息，比赛申请表信息。还会对该比赛的内容文件夹，进行一次重命名，最后再生成出一份报告</div>
+					<br />
+					<button type="button" class="btn btn-success"
+						ng-click="closeSubmit(true)">立刻关闭</button>
+					<button type="button" class="btn btn-info"
+						ng-click="closeSubmit(false)">午夜关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 关闭弹出框 结束-->
+
+	<!-- 判题弹出框 开始-->
+	<div class="modal fade dialog" id="judgeDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">判题窗口</h4>
+				</div>
+				<div class="modal-body">
+					<div>对该比赛内，所有选手提交的代码进行一次判断，得出一个选手的比赛成绩</div>
+					<br />
+					<button type="button" class="btn btn-success"
+						ng-click="judgeSubmit(true)">立刻判题</button>
+					<button type="button" class="btn btn-info"
+						ng-click="judgeSubmit(false)">午夜判题</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 判题弹出框 结束-->
+
+	<!-- 报告弹出框 开始-->
+	<div class="modal fade dialog" id="reportDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">报告窗口</h4>
+				</div>
+				<div class="modal-body">
+					<div>生成该比赛的基本情况报告（Excel表格），若该比赛还未进行判题，那么生成报告是没什么意义的</div>
+					<br />
+					<button type="button" class="btn btn-success"
+						ng-click="createReport()">生成报告</button>
+					<button type="button" class="btn btn-info"
+						ng-click="downloadReport()">下载报告</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 报告弹出框 结束-->
+
+	<!-- 详情弹出框 开始-->
+	<div class="modal fade dialog" id="detailDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">比赛信息窗口</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table  table-hover ">
+						<tbody>
+							<tr>
+								<td>编号：{{currentDetailObj.competitionId}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比赛名称：{{currentDetailObj.competitionName}}</td>
+							</tr>
+							<tr>
+								<td>开始时间：{{currentDetailObj.competitionBeginTime |
+									stringDateFormat:'yyyy-MM-dd HH:mm:ss' }}
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;结束时间：{{currentDetailObj.competitionEndTime
+									| stringDateFormat:'yyyy-MM-dd HH:mm:ss'}}</td>
+							</tr>
+							<tr ng-if="currentDetailObj.isCanDeclare">
+								<td>比赛申请开始时间：{{currentDetailObj.competitionApplyBeginTime |
+									stringDateFormat:'yyyy-MM-dd HH:mm:ss' }}
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比赛申请结束时间：{{currentDetailObj.competitionApplyEndTime
+									| stringDateFormat:'yyyy-MM-dd HH:mm:ss'}}</td>
+							</tr>
+							<tr>
+								<td>允许参赛人数：
+									{{currentDetailObj.competitionPlayersCount}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									是否已公布：{{currentDetailObj.isPublish== true ? "是" :
+									"否"}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									是否允许申请参赛：{{currentDetailObj.isCanDeclare== true ? "是" :
+									"否"}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									是否已经评判：{{currentDetailObj.isJudge== true ? "已判" :
+									"未判"}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									是否已经关闭：{{currentDetailObj.isClose== true ? "已关" : "未关"}}</td>
+							</tr>
+							<tr>
+								<td>对应的题目编号：{{currentDetailObj.competitionProblemIds}}</td>
+							</tr>
+							<tr>
+								<td>存放信息的物理路径：{{currentDetailObj.competitionContentRootPath}}</td>
+							</tr>
+							<tr>
+								<td>描述：<br />{{currentDetailObj.competitionDescription}}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 详情弹出框 结束-->
+
+	<!-- 修改弹出框 开始-->
+	<div class="modal fade dialog" id="updateDialog">
+		<div class="modal-dialog">
+			<form ng-submit="editSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">比赛信息修改窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>比赛名称：<input type="text"
+										ng-model="currentUpdateObj.competitionName" maxlength="30" required/>
+									</td>
+								</tr>
+								<tr>
+									<td>比赛开始时间：<input
+										id="currentUpdateObjCompetitionBeginTime" placeholder="请选择时间"
+										class="laydate-icon"
+										ng-model="currentUpdateObj.competitionBeginTime"
+										onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比赛结束时间：<input
+										id="currentUpdateObjCompetitionEndTime" placeholder="请选择时间"
+										class="laydate-icon"
+										ng-model="currentUpdateObj.competitionEndTime"
+										onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+									</td>
+								</tr>
+								<tr ng-if="currentUpdateObj.isCanDeclare">
+									<td>申请报名开始时间：<input
+										id="currentUpdateObjCompetitionApplyBeginTime"
+										placeholder="请选择时间" class="laydate-icon"
+										ng-model="currentUpdateObj.competitionApplyBeginTime"
+										onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;申请报名结束时间：<input
+										id="currentUpdateObjCompetitionApplyEndTime"
+										placeholder="请选择时间" class="laydate-icon"
+										ng-model="currentUpdateObj.competitionApplyEndTime"
+										onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+									</td>
+								</tr>
+								<tr>
+									<td>允许参赛人数：<input type="number" min="1"
+										ng-model="currentUpdateObj.competitionPlayersCount"
+										required="required" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 是否公布比赛：<input
+										type="radio" ng-model="currentUpdateObj.isPublish"
+										ng-value="false" />否 <input type="radio"
+										ng-model="currentUpdateObj.isPublish" ng-value="true" />是
+									</td>
+								</tr>
+								<tr>
+									<td>描述：<br /> <textarea rows="5" cols="80"
+											maxlength="400"
+											ng-model="currentUpdateObj.competitionDescription"
+											placeholder="最多400字"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td>使用的题目编号：<input type="text"
+										placeholder="多个编号之间用,(英文的逗号)分隔"
+										ng-model="currentUpdateObj.competitionProblemIds" /></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">保存</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 修改弹出框 结束-->
+
+	<!-- 添加弹出框 开始-->
+	<div class="modal fade dialog" id="addDialog">
+		<div class="modal-dialog">
+			<form ng-submit="addSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">比赛添加窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>比赛名称：<input type="text"
+										ng-model="currentAddObj.competitionName" maxlength="30" />
+									</td>
+								</tr>
+								<tr>
+									<td>比赛开始时间：<input id="currentAddObjCompetitionBeginTime"
+										placeholder="请选择时间" class="laydate-icon"
+										onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比赛结束时间：<input
+										id="currentAddObjCompetitionEndTime" placeholder="请选择时间"
+										class="laydate-icon"
+										onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+									</td>
+								</tr>
+								<tr>
+									<td>允许参赛人数：<input type="text"
+										ng-model="currentAddObj.competitionPlayersCount" />
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 是否公布比赛：<input type="radio"
+										ng-model="currentAddObj.isPublish" ng-value="false"
+										ng-init="currentAddObj.isPublish = false" ng-checked="true" />否
+										<input type="radio" ng-model="currentAddObj.isPublish"
+										ng-value="true" />是&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 是否允许申请参赛：<input
+										type="radio" ng-model="currentAddObj.isCanDeclare"
+										ng-value="false" ng-init="currentAddObj.isCanDeclare = false"
+										ng-checked="true" />否 <input type="radio"
+										ng-model="currentAddObj.isCanDeclare" ng-value="true" />是&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：只有公布的题目才能进行申请
+									</td>
+								</tr>
+								<tr ng-if="currentAddObj.isCanDeclare">
+									<td>比赛申请开始时间：<input
+										id="currentAddObjCompetitionApplyBeginTime"
+										placeholder="请选择时间" class="laydate-icon"
+										onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比赛申请结束时间：<input
+										id="currentAddObjCompetitionApplyEndTime" placeholder="请选择时间"
+										class="laydate-icon"
+										onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+									</td>
+								</tr>
+								<tr>
+									<td>描述：<br /> <textarea rows="5" cols="80"
+											maxlength="400"
+											ng-model="currentAddObj.competitionDescription"
+											placeholder="最多400字"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td>使用的题目编号：<input type="text"
+										placeholder="多个编号之间用,(英文的逗号)分隔"
+										ng-model="currentAddObj.competitionProblemIds" /></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">添加</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 添加弹出框 结束-->
+</div>
+<link href="css/laydate.css" rel="stylesheet">
+<div load-Script ng-src="js/laydate.js"></div>
+

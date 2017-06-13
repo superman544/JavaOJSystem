@@ -1,0 +1,109 @@
+
+<style>
+#competitionAnswerCtr {
+	margin: 50px;
+}
+
+#competitionAnswerCtr p {
+	word-break: break-all;
+}
+
+#competitionAnswerCtr div {
+	word-break: break-all;
+}
+
+#competitionAnswerDialog {
+	margin: 0;
+	width: 100%;
+	text-align: center;
+}
+
+#competitionAnswerDialog .modal-header {
+	border-bottom: 0;
+}
+
+#competitionAnswerDialog .modal-dialog {
+	width: 90%;
+}
+
+#competitionAnswerDialog textarea {
+	width: 90%;
+}
+</style>
+<div id="competitionAnswerCtr" ng-controller="competitionAnswerCtr">
+	<div class="col-md-4">
+		<div class="panel panel-info ">
+			<div class="panel-heading">基本信息</div>
+			<div class="panel-body">
+				<p>比赛编号：{{loginObj.competitionId}}</p>
+				<p>比赛名称：{{loginObj.competitionName}}</p>
+				<p>比赛结束时间：{{loginObj.competitionEndTime|
+					stringDateFormat:'yyyy-MM-dd HH:mm:ss'}}</p>
+				<p>登录账号：{{loginObj.account}}</p>
+				<p>账号备注信息：{{competitionData.accountRemark}}</p>
+				<button class="btn btn-danger" type="button" ng-click="logout()">退出登录</button>
+			</div>
+		</div>
+
+		<div class="panel panel-success ">
+			<div class="panel-heading">题目列表</div>
+			<div class="panel-body">
+				<div class="alert alert-success alert-dismissable"
+					ng-if="isLoadingData">加载数据中，请稍等</div>
+				<div class="list-group" ng-if="!isLoadingData">
+					<a href="javascript:;" class="list-group-item"
+						ng-repeat="problem in competitionData.competitionProblems"
+						ng-click="detail($index)">
+						<h4 class="list-group-item-heading">
+							{{problem.problemName}} <label ng-if="problem.isHaveSubmit">(已提交)</label>
+						</h4>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="panel panel-primary ">
+			<div class="panel-heading">题目信息</div>
+			<div class="panel-body">
+				<div class="alert alert-success alert-dismissable"
+					ng-if="isLoadingData">加载数据中，请稍等</div>
+				<div ng-if="!isLoadingData && detailProblemObj != null">
+					<h2>{{detailProblemObj.problemName}}</h2>
+					<p>标签：{{detailProblemObj.problemLabel}}</p>
+					<p>内存限制：{{detailProblemObj.memoryLimit}}KB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;时间限制：{{detailProblemObj.timeLimit}}毫秒</p>
+					<br />
+					<p id="detailProblemContent">{{detailProblemObj.problemContent
+						| formatToHtml : "detailProblemContent"}}</p>
+					<br />
+					<p>
+						<button class="btn btn-success" type="button"
+							ng-click="answerDialogShow()">提交答案</button>
+						</td>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 提交代码弹出框 开始-->
+	<div class="modal fade dialog" id="competitionAnswerDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>题目名字：{{detailProblemObj.problemName}}</p>
+					<p>代码语言：java</p>
+					<textarea rows="20" cols="100" ng-model="answerData.code"></textarea>
+					<br /> <br /> <br />
+					<button class="btn btn-success" type="button"
+						ng-click="answerSubmit()">提交代码</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

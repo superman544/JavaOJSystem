@@ -1,0 +1,147 @@
+<style>
+#detailDialog,#addDialog,#updateDialog {
+	margin: 0;
+	width: 100%;
+}
+
+.modal-dialog {
+	width: 90%;
+}
+
+textarea {
+	width: 90%;
+}
+</style>
+<div class="common-content" ng-controller="managerCompetitionAccountCtr">
+	<div id="loadingTip" class="alert alert-success alert-dismissable"
+		ng-if="isLoadingData">加载数据中，请稍等</div>
+
+	<div ng-if="!isLoadingData">
+		比赛编号：<select id="selectedCompetitionId">
+			<option ng-repeat="id in allCompetitionIds" value="{{id}}"
+				selected="selected">{{id}}</option>
+		</select>
+		<button class="btn btn-primary common-topButton" type="button"
+			ng-click="getAllAccount()">查询相关账户</button>
+		<table
+			class="table table-bordered table-hover table-striped common-dataTable">
+			<thead>
+				<tr>
+					<th class="span1">编号</th>
+					<th class="span2">登录账号</th>
+					<th class="span2">登录密码</th>
+					<th class="span2">是否已分配给某申请</th>
+					<th class="span2">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="account in allAccounts">
+					<td class="span1">{{account.competitionAccountId}}</td>
+					<td class="span2">{{account.loginAccount}}</td>
+					<td class="span2">{{account.loginPassword}}</td>
+					<td class="span2">{{account.isUse == true ?"是" : "否"}}</td>
+					<td class="span2">
+						<button class="btn btn-success " type="button"
+							ng-click="detail($index)">详情</button>
+						<button class="btn btn-info " type="button"
+							ng-click="edit($index)">修改信息</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- 详情弹出框 开始-->
+	<div class="modal fade dialog" id="detailDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+					</button>
+					<h4 class="modal-title">题目信息窗口</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table  table-hover ">
+						<tbody>
+							<tr>
+								<td>编号：{{currentDetailObj.competitionAccountId}}</td>
+							</tr>
+							<tr>
+								<td>登陆账号：{{currentDetailObj.loginAccount}}</td>
+							</tr>
+							<tr>
+								<td>登陆密码：{{currentDetailObj.loginPassword}}</td>
+							</tr>
+							<tr>
+								<td>对应比赛的编号：{{currentDetailObj.competitionId}}</td>
+							</tr>
+							<tr>
+								<td>该次比赛中的得分：{{currentDetailObj.accountScore}}</td>
+							</tr>
+							<tr>
+								<td>是否已经分配出去：{{currentDetailObj.isUse == true ?"是" : "否"}}</td>
+							</tr>
+							<tr>
+								<td>代码保存根路径：{{currentDetailObj.accountCodeRootPath}}</td>
+							</tr>
+							<tr>
+								<td>备注：<br />{{currentDetailObj.accountRemark}}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 详情弹出框 结束-->
+
+
+	<!-- 修改弹出框 开始-->
+	<div class="modal fade dialog" id="updateDialog">
+		<div class="modal-dialog">
+			<form ng-submit="editSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">账号信息修改窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>登陆账号：（请保证在一个比赛中唯一） <input type="text"
+										ng-model="currentUpdateObj.loginAccount"
+										placeholder="长度为6-20位的，数字或者英文字母" pattern="[a-zA-Z0-9]{6,20}" required>{{error.loginAccountError}}
+									</td>
+								</tr>
+								<tr>
+									<td>登陆密码： <input type="text"
+										ng-model="currentUpdateObj.loginPassword"
+										placeholder="长度为6-20位的，数字或者英文字母" pattern="[a-zA-Z0-9]{6,20}" required>{{error.loginPasswordError}}
+									</td>
+								</tr>
+								<tr>
+									<td>备注：<br /> <textarea type="text"
+											ng-model="currentUpdateObj.accountRemark" rows="3" cols="100"
+											maxlength="300"> </textarea>{{error.accountRemarkError}}
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">保存</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 修改弹出框 结束-->
+
+</div>
+
+

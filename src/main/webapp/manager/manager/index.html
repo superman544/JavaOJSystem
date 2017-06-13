@@ -1,0 +1,148 @@
+<div class="common-content" ng-controller="managerManagerCtr">
+	<div id="loadingTip" class="alert alert-success alert-dismissable"
+		ng-if="isLoadingData">加载数据中，请稍等</div>
+
+	<div ng-if="!isLoadingData">
+		<button class="btn btn-primary common-topButton" type="button"
+			ng-click="add()">添加管理员</button>
+		<button class="btn btn-success common-topButton" type="button"
+			ng-click="refresh()">刷新数据</button>
+
+		<table
+			class="table table-bordered table-hover table-striped common-dataTable">
+			<thead>
+				<tr>
+					<th class="col-md-1">编号</th>
+					<th class="col-md-3">账号</th>
+					<th class="col-md-3">昵称</th>
+					<th class="col-md-3">角色</th>
+					<th class="col-md-1">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="manager in page.datas">
+					<td>{{manager.managerId}}</td>
+					<td>{{manager.account}}</td>
+					<td>{{manager.nickname}}</td>
+					<td>{{manager.role.roleName}}</td>
+					<td>
+						<button class="btn btn-info " type="button"
+							ng-click="edit($index)">修改</button>
+						<button class="btn btn-danger " type="button"
+							ng-click="delete($index)">删除</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<ul class="pager">
+			<li><a href="javascript:;" ng-if="isCanPre"
+				ng-click="changePage(false)">&laquo;上一页</a></li>
+			<li class="active"><span>页码：{{page.currentPage}}/{{page.totalPage}}
+					&nbsp; &nbsp;总条数：<span class="badge">{{page.totalCount}}</span>
+			</span></li>
+			<li><a href="javascript:;" ng-if="isCanNext"
+				ng-click="changePage(true)">下一页&raquo;</a></li>
+		</ul>
+	</div>
+	<!-- 修改弹出框 开始-->
+	<div class="modal fade" id="updateDialog">
+		<div class="modal-dialog">
+			<form ng-submit="editSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">管理员信息修改窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>管理员账号：</td>
+									<td>{{currentUpdateObj.account}}</td>
+								</tr>
+								<tr>
+									<td>管理员密码：</td>
+									<td><input type="text"
+										ng-model="currentUpdateObj.password"
+										placeholder="若空着不填，表示不更改密码(6-20位的，数字或者英文字母)"
+										pattern="[a-zA-Z0-9]{6,20}">{{error.passwordError}}</td>
+								</tr>
+								<tr>
+									<td>管理员昵称：</td>
+									<td><input type="text"
+										ng-model="currentUpdateObj.nickname" maxlength="20"></td>
+								</tr>
+								<tr>
+									<td>管理员拥有角色</td>
+									<td><select ng-model="currentUpdateObj.roleId">
+											<option ng-repeat="role in updateMaterial.allRole"
+												value="{{role.roleId}}">{{role.roleName}}</option>
+									</select></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">保存</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 修改弹出框 结束-->
+
+	<!-- 添加弹出框 开始-->
+	<div class="modal fade" id="addDialog">
+		<div class="modal-dialog">
+			<form ng-submit="addSubmit()">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only"></span>
+						</button>
+						<h4 class="modal-title">管理员添加窗口</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover ">
+							<tbody>
+								<tr>
+									<td>管理员账号：</td>
+									<td><input type="text" ng-model="currentAddObj.account"
+										placeholder="账号：长度为6-20位的，数字或者英文字母"
+										pattern="[a-zA-Z0-9]{6,20}">{{error.accountError}}</td>
+								</tr>
+								<tr>
+									<td>管理员密码：</td>
+									<td><input type="text" ng-model="currentAddObj.password"
+										placeholder="密码：长度为6-20位的，数字或者英文字母"
+										pattern="[a-zA-Z0-9]{6,20}">{{error.passwordError}}</td>
+								</tr>
+								<tr>
+									<td>管理员昵称：</td>
+									<td><input type="text" ng-model="currentAddObj.nickname"
+										maxlength="20"></td>
+								</tr>
+								<tr>
+									<td>管理员拥有角色</td>
+									<td><select ng-model="currentAddObj.roleId">
+											<option ng-repeat="role in addMaterial.allRole"
+												value="{{role.roleId}}">{{role.roleName}}</option>
+									</select></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">添加</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 添加弹出框 结束-->
+</div>
+
+

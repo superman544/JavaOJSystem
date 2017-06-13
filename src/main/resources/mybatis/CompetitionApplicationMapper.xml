@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.CompetitionApplicationDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		competition_application_id,email,phone,application_people_count,application_summary,application_content,competition_id,level,is_have_send_email,is_have_handle,competition_account_id
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="competitionApplicationId != null">
+				and competition_application_id =
+				#{competitionApplicationId}
+			</if>
+			<if test="email != null">
+				and email =#{email}
+			</if>
+			<if test="phone != null">
+				and phone =#{phone}
+			</if>
+			<if test="applicationPeopleCount != null">
+				and application_people_count =#{applicationPeopleCount}
+			</if>
+			<if test="applicationSummary != null">
+				and application_summary =#{applicationSummary}
+			</if>
+			<if test="applicationContent != null">
+				and application_content =#{applicationContent}
+			</if>
+			<if test="competitionId != null">
+				and competition_id =#{competitionId}
+			</if>
+			<if test="level != null">
+				and level =#{level}
+			</if>
+			<if test="isHaveSendEmail != null">
+				and is_have_send_email =#{isHaveSendEmail}
+			</if>
+			<if test="isHaveHandle != null">
+				and is_have_handle =#{isHaveHandle}
+			</if>
+			<if test="competitionAccountId != null">
+				and competition_account_id =#{competitionAccountId}
+			</if>
+		</trim>
+	</sql>
+
+	<insert id="add" parameterType="cn.superman.web.po.CompetitionApplication"
+		useGeneratedKeys="true" keyProperty="competitionApplicationId">
+		insert into
+		competition_application(competition_application_id,email,phone,application_people_count,application_summary,application_content,competition_id,level,is_have_send_email,is_have_handle)
+		values(#{competitionApplicationId},#{email},#{phone},#{applicationPeopleCount},#{applicationSummary},#{applicationContent},#{competitionId},#{level},#{isHaveSendEmail},#{isHaveHandle})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.CompetitionApplication">
+		update competition_application
+		<set>
+			<if test="email != null">
+				email =#{email},
+			</if>
+			<if test="phone != null">
+				phone =#{phone},
+			</if>
+			<if test="applicationPeopleCount != null">
+				application_people_count =#{applicationPeopleCount},
+			</if>
+			<if test="applicationSummary != null">
+				application_summary =#{applicationSummary},
+			</if>
+			<if test="applicationContent != null">
+				application_content =#{applicationContent},
+			</if>
+			<if test="competitionId != null">
+				competition_id =#{competitionId},
+			</if>
+			<if test="level != null">
+				level =#{level},
+			</if>
+			<if test="isHaveSendEmail != null">
+				is_have_send_email =#{isHaveSendEmail},
+			</if>
+			<if test="isHaveHandle != null">
+				is_have_handle =#{isHaveHandle},
+			</if>
+			<if test="competitionAccountId != null">
+				competition_account_id =#{competitionAccountId},
+			</if>
+		</set>
+		where competition_application_id = #{competitionApplicationId}
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from competition_application
+		<where>
+			<if test="#{_parameter != null}">
+				and competition_application_id = #{_parameter}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.CompetitionApplication">
+		delete from competition_application
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="find" resultType="cn.superman.web.po.CompetitionApplication">
+		select
+		<include refid="Base_Column_List" />
+		from competition_application
+	</select>
+
+	<select id="findById" parameterType="Integer"
+		resultType="cn.superman.web.po.CompetitionApplication">
+		select
+		<include refid="Base_Column_List" />
+		from competition_application
+		<where>
+			<if test="#{_parameter != null}">
+				and competition_application_id = #{_parameter}
+			</if>
+		</where>
+	</select>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.CompetitionApplication"
+		resultType="cn.superman.web.po.CompetitionApplication">
+		select
+		<include refid="Base_Column_List" />
+		from competition_application
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+	<select id="findAllCompetionId" resultType="Integer">
+		SELECT
+		competition_id
+		FROM
+		competition_application
+		GROUP BY
+		competition_id
+	</select>
+
+	<select id="queryTotalCount" resultType="Long">
+		select count(*)
+		from
+		competition_application
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.CompetitionApplication"
+		resultType="Long">
+		select count(*)
+		from competition_application
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+
+</mapper>

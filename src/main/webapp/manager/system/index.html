@@ -1,0 +1,113 @@
+<style>
+.gap {
+	margin-top: 20px;
+}
+
+.no-padding {
+	padding: 0;
+}
+
+.no-margin {
+	margin: 0;
+}
+
+.table td,.table th {
+	text-align: center;
+}
+</style>
+<div class="common-content" ng-controller="managerSystemCtr">
+
+
+	<div class="gap alert alert-warning alert-dismissable">等待判题的题目数量(每秒刷新):{{pendingHandleProblemCount.pendingHandleProblemCount}}</div>
+	<div class="panel panel-primary gap">
+		<div class="panel-heading">服务器基本信息(5秒刷新一次)</div>
+		<div class="panel-body no-padding">
+			<table class="table no-margin">
+				<thead>
+					<tr>
+						<th>系统版本</th>
+						<th>电脑CPU核数</th>
+						<th>CPU最近负载</th>
+						<th>总物理内存</th>
+						<th>空闲内存</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>{{operationSystemInfo.operatingSystemName}}</td>
+						<td>{{operationSystemInfo.systemCpuCount}}</td>
+						<td>{{operationSystemInfo.systemCpuLoad| number :4}}</td>
+						<td>{{operationSystemInfo.totalPhysicalMemory/1024/1024|
+							number :2}}MB</td>
+						<td>{{operationSystemInfo.freePhysicalMemory/1024/1024|
+							number :2}}MB</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="panel panel-primary gap">
+		<div class="panel-heading">Web系统基本信息(3秒刷新一次)</div>
+		<div class="panel-body no-padding">
+			<table class="table no-margin">
+				<thead>
+					<tr>
+						<th>进程ID</th>
+						<th>运行时间</th>
+						<th>当前使用内存(不算上web容器使用的内存)</th>
+						<th>当前启动线程数</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>{{appInfo.pid}}</td>
+						<td>{{appInfo.runTime | timeShow}}</td>
+						<td>{{appInfo.useMemory/1024/1024| number :2}}MB</td>
+						<td>{{appInfo.threadCount}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="panel panel-primary gap">
+		<div class="panel-heading">沙箱信息(刷新时间不固定)</div>
+		<div class="panel-body no-padding">
+			<table class="table no-margin">
+				<thead>
+					<tr>
+						<th>主机地址</th>
+						<th>端口</th>
+						<th>进程ID</th>
+						<th>开始运行时间</th>
+						<th>使用内存</th>
+						<th>正在运行</th>
+						<th>正在判题</th>
+						<th>准备关闭</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="sandboxStatus in allSandboxStatus">
+						<td>{{sandboxStatus.ip}}</td>
+						<td>{{sandboxStatus.port}}</td>
+						<td>{{sandboxStatus.pid}}</td>
+						<td>{{sandboxStatus.beginTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+						<td>{{sandboxStatus.useMemory/1024/1024| number :2}}MB</td>
+						<td>{{sandboxStatus.isRunning == true ? "是" : "否"}}</td>
+						<td>{{sandboxStatus.isJudgeing == true ? "是" : "否"}}</td>
+						<td>{{sandboxStatus.isWantClose == true ? "是" : "否"}}</td>
+						<td><button class="btn btn-danger" type="button"
+								ng-click="closeOne($index)">关闭</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="panel-footer"
+			style="text-align: center;background: white;">
+			<button class="btn btn-primary" type="button" ng-click="open()">开启新沙箱</button>
+			<button class="btn btn-danger" type="button" ng-click="closeAll()">关闭所有沙箱</button>
+		</div>
+	</div>
+
+	<div load-Script ng-src="js/sockjs1.1.1.min.js"></div>
+</div>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+	<!-- 组件扫描 只扫描action -->
+	<context:component-scan base-package="cn.superman.web.controller" />
+
+	<!-- 使用<mvc:annotation-driven />替换上边定义的处理器映射器和适配器 -->
+	<mvc:annotation-driven />
+	<mvc:resources mapping="/umeditor1_2_2-utf8-jsp/**"
+		location="/umeditor1_2_2-utf8-jsp/" />
+	<mvc:default-servlet-handler />
+
+
+	<!-- 第一步: 创建自定义日期转换规则 -->
+	<bean id="dateConvert" class="cn.superman.web.util.DateConvert" />
+
+	<!-- 第二步： 创建convertion-Service ，并注入dateConvert -->
+	<bean id="conversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<ref bean="dateConvert" />
+			</set>
+		</property>
+	</bean>
+
+	<!-- 第三步：注册处理器映射器/处理器适配器 ，添加conversion-service属性 -->
+	<mvc:annotation-driven conversion-service="conversionService" />
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 最多只能上传大小为2M的文件，无论是图片，还是标准的输入输出文件 -->
+		<property name="maxUploadSize" value="2097152" />
+		<property name="maxInMemorySize" value="4096" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/Admin*/*" />
+			<mvc:mapping path="/manager/*" />
+			<mvc:exclude-mapping path="/AdminManagerController/login" />
+			<mvc:exclude-mapping path="/manager/login.html" />
+			<bean
+				class="cn.superman.web.controller.Interceptor.ManagerLoginInterceptor">
+			</bean>
+		</mvc:interceptor>
+		<!-- 注意拦截器配置的顺序，必须配置在校验了是否已经登录的拦截器后面 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/Admin*/*" />
+			<bean
+				class="cn.superman.web.controller.Interceptor.AdminPermissionInterceptor">
+			</bean>
+		</mvc:interceptor>
+
+		<mvc:interceptor>
+			<mvc:mapping path="/SubmitRecordController/*" />
+			<mvc:mapping path="/UserController/sendUpdateCodeEmail" />
+			<mvc:mapping path="/UserController/updateSubmit" />
+			<mvc:mapping path="/ProblemController/submitAnswer" />
+			<bean class="cn.superman.web.controller.Interceptor.UserLoginInterceptor">
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2009-2012 the original author or authors. Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. -->
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.superman.web.dao.ProblemTypeDao">
+
+	<cache />
+	<sql id="Base_Column_List">
+		problem_type_id,problem_type_name,problem_type_description
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		<trim suffixOverrides=",">
+			<if test="problemTypeId != null">
+				and problem_type_id = #{problemTypeId}
+			</if>
+			<if test="problemTypeName != null">
+				and problem_type_name = #{problemTypeName}
+			</if>
+			<if test="problemTypeDescription != null">
+				and problem_type_description = #{problemTypeDescription}
+			</if>
+		</trim>
+	</sql>
+
+	<insert id="add" parameterType="cn.superman.web.po.ProblemType"
+		useGeneratedKeys="true" keyProperty="problem_typeId">
+		insert into
+		problem_type(problem_type_name,problem_type_description)
+		values(#{problemTypeName},#{problemTypeDescription})
+	</insert>
+
+	<update id="update" parameterType="cn.superman.web.po.ProblemType">
+		update problem_type
+		<set>
+			<if test="problemTypeName != null">
+				problem_type_name = #{problemTypeName},
+			</if>
+			<if test="problemTypeDescription != null">
+				problem_type_description = #{problemTypeDescription},
+			</if>
+		</set>
+		where problem_type_id = #{problemTypeId}
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from problem_type
+		<where>
+			<if test="#{_parameter != null}">
+				and problem_type_id = #{_parameter}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteWithCondition" parameterType="cn.superman.web.po.ProblemType">
+		delete from problem_type
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</delete>
+
+	<select id="find" resultType="cn.superman.web.po.ProblemType">
+		select
+		<include refid="Base_Column_List" />
+		from problem_type
+	</select>
+
+	<select id="findById" parameterType="Integer"
+		resultType="cn.superman.web.po.ProblemType">
+		select
+		<include refid="Base_Column_List" />
+		from problem_type
+		<where>
+			<if test="#{_parameter != null}">
+				and problem_type_id = #{_parameter}
+			</if>
+		</where>
+	</select>
+
+	<select id="findWithCondition" parameterType="cn.superman.web.po.ProblemType"
+		resultType="cn.superman.web.po.ProblemType">
+		select
+		<include refid="Base_Column_List" />
+		from problem_type
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+	<select id="findWithSomeIds" parameterType="java.util.List"
+		resultType="cn.superman.web.po.ProblemType">
+		select
+		<include refid="Base_Column_List" />
+		from problem_type
+		where problem_type_id in
+		<foreach collection="list" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="queryTotalCount" resultType="Long">
+		select count(*)
+		from
+		problem_type
+	</select>
+
+	<select id="queryTotalCountWithCondition" parameterType="cn.superman.web.po.ProblemType"
+		resultType="Long">
+		select count(*)
+		from problem_type
+		<where>
+			<include refid="Example_Where_Clause" />
+		</where>
+	</select>
+
+
+</mapper>
